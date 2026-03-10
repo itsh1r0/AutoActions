@@ -23,9 +23,7 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore Source/AutoActions.sln
 
-      # Pre-build event copies HDRController.dll từ Externals\$(PlatformName)\
-      # nhưng repo chỉ có 1 bản chung, nên tạo thư mục x64/x86 thủ công
-      - name: Prepare HDRController for x64 and x86
+      - name: Prepare HDRController DLL for x64/x86
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "Source\Externals\x64"
@@ -33,32 +31,33 @@ jobs:
           Copy-Item "Source\AutoActions\HDRController.dll" "Source\Externals\x64\HDRController.dll"
           Copy-Item "Source\AutoActions\HDRController.dll" "Source\Externals\x86\HDRController.dll"
 
-      - name: Build x64 Release
+      - name: Build & Package
+        shell: pwsh
         run: |
-          msbuild Source/AutoActions.sln `
-            /t:Build `
-            /m `
-            /p:Configuration=Release `
-            /p:Platform=x64
+          # Patch Build.ps1: thay hardcoded VS path bằng msbuild từ PATH
+          # (setup-msbuild ở trên đã add vào PATH rồi)
+          $msbuildPath = (Get-Command msbuild).Source
+          $content = Get-Content Build.ps1 -Raw
+          $content = $content -replace [regex]::Escape("'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'"), "'$msbuildPath'"
 
-      - name: Build x86 Release
-        run: |
-          msbuild Source/AutoActions.sln `
-            /t:Build `
-            /m `
-            /p:Configuration=Release `
-            /p:Platform=x86
+          # Fix typo $x86ip -> $x86zip và thêm version vào lệnh gọi cuối
+          $content = $content -replace '\$x86ip', '$x86zip'
+          $content = $content -replace 'buildVS \.\\Source\\AutoActions\.sln', 'buildVS ".\Source\AutoActions.sln" "ci-build"'
+
+          Set-Content Build.ps1 $content
+          New-Item -ItemType Directory -Force -Path Releases
+          . .\Build.ps1
 
       - name: Upload x64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: AutoActions-x64
-          path: Source/Release_x64/
+          path: Releases/*x64*.zip
           if-no-files-found: error
 
       - name: Upload x86 artifact
         uses: actions/upload-artifact@v4
         with:
           name: AutoActions-x86
-          path: Source/Release_x86/
+          path: Releases/*x86*.zip
           if-no-files-found: error
