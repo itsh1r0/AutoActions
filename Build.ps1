@@ -53,5 +53,4 @@ function buildVS
 }
 
 
-
-buildVS .\Source\AutoActions.sln "1.0.0"
+# Chạy local: buildVS .\Source\AutoActions.sln "1.0.0"
