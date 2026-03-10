@@ -14,7 +14,10 @@ function buildVS
     )
     process
     {
-        $msBuildExe = 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'
+        $msBuildExe = (Get-Command msbuild -ErrorAction SilentlyContinue)?.Source
+        if (-not $msBuildExe) {
+            $msBuildExe = 'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'
+        }
 
         Write-Host "Building x64 $($path)" -foregroundcolor green
         & "$($msBuildExe)" "$($path)" /t:Build /m /property:Configuration=Release /property:Platform=x64
@@ -34,7 +37,7 @@ function buildVS
         Get-ChildItem -Path ".\Source\Release_x64" | 
         Where-Object {$_.PsIsContainer -eq $true -or $_.Extension -eq ".exe" -or $_.Extension -eq ".config" -or $_.Extension -eq ".dll" -or $_.Name -eq "UpdateData.json"   } | Compress-Archive -DestinationPath $x64zip
 
-	    Write-Host "Creating Zip x86 $($x86ip)" -foregroundcolor green
+	    Write-Host "Creating Zip x86 $($x86zip)" -foregroundcolor green
         if (Test-Path $x86zip -PathType leaf)
         {del $x86zip}
 
@@ -47,4 +50,4 @@ function buildVS
 
 
 
-buildVS .\Source\AutoActions.sln
+buildVS .\Source\AutoActions.sln "1.0.0"
