@@ -40,9 +40,8 @@ jobs:
           $content = Get-Content Build.ps1 -Raw
           $content = $content -replace [regex]::Escape("'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'"), "'$msbuildPath'"
 
-          # Fix typo $x86ip -> $x86zip và thêm version vào lệnh gọi cuối
+          # Fix typo $x86ip -> $x86zip
           $content = $content -replace '\$x86ip', '$x86zip'
-          $content = $content -replace 'buildVS \.\\Source\\AutoActions\.sln', 'buildVS ".\Source\AutoActions.sln" "ci-build"'
 
           Set-Content Build.ps1 $content
           New-Item -ItemType Directory -Force -Path Releases
