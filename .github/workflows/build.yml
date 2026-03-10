@@ -61,6 +61,7 @@ jobs:
         with:
           name: AutoActions-x64
           path: Releases/*x64*.zip
+          compression-level: 0
           if-no-files-found: error
 
       - name: Upload x86 artifact
@@ -68,4 +69,5 @@ jobs:
         with:
           name: AutoActions-x86
           path: Releases/*x86*.zip
+          compression-level: 0
           if-no-files-found: error
