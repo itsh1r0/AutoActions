@@ -60,8 +60,8 @@ namespace AutoActions.Info.Github
 
             changelog += $"[{release.TagName}]\r\n\r\n{releaseChangelog}";
             Globals.Logs.Add($"Creating GitHubData...", false);
-            var assetx64 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("_X64"));
-            var assetx86 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("_X86"));
+            var assetx64 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("x64"));
+            var assetx86 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("x86"));
             return new GitHubData(changelog, latestGitHubVersion, latestReleaseDate, $@"https://github.com/itsh1r0/AutoActions/releases/tag/{latestGitHubVersion}", assetx64 != null ? assetx64.BrowserDownloadUrl : "", assetx86 != null ? assetx86.BrowserDownloadUrl : "");
         }
     }
