@@ -37,8 +37,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path "Source\Externals\x64"
           New-Item -ItemType Directory -Force -Path "Source\Externals\x86"
           # Dùng bản vừa build thay vì file có sẵn trong repo
-          Copy-Item "Source\HDRController\x64\Release\HDRController.dll" "Source\Externals\x64\HDRController.dll" -Force
-          Copy-Item "Source\HDRController\Win32\Release\HDRController.dll" "Source\Externals\x86\HDRController.dll" -Force
+          Copy-Item "Source\HDRController\Release_x64\HDRController.dll" "Source\Externals\x64\HDRController.dll" -Force
+          Copy-Item "Source\HDRController\Release_x86\HDRController.dll" "Source\Externals\x86\HDRController.dll" -Force
 
       - name: Build & Package
         shell: pwsh
