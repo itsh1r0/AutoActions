@@ -1,4 +1,4 @@
-﻿using AutoActions.Info;
+using AutoActions.Info;
 using AutoActions.Info.Github;
 using AutoActions.Profiles;
 using CodectoryCore;
@@ -21,7 +21,7 @@ namespace AutoActions
 
         public static Logs Logs = new Logs($"{System.AppDomain.CurrentDomain.BaseDirectory}AutoActions.log", "AutoActions", Assembly.GetExecutingAssembly().GetName().Version.ToString(), false);
 
-        public static int GlobalRefreshInterval = 500;
+        public static int GlobalRefreshInterval = 1000;
 
         private string SettingsPathCompatible => $"{System.AppDomain.CurrentDomain.BaseDirectory}UserSettings.xml";
 
