@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -25,11 +25,16 @@ namespace AutoActions
         [STAThread]
         public static void Main()
          {
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+                System.IO.File.WriteAllText("crash.log", e.ExceptionObject.ToString());
+
          bool createNew = false;
             mutex = new Mutex(true, "{2846416C-610B-4A6B-A31C-A4AA6826E9BE}", out createNew);
             if (mutex.WaitOne(TimeSpan.Zero, true))
             {
                 var application = new App();
+                application.DispatcherUnhandledException += (s, e) =>
+                    System.IO.File.WriteAllText("crash.log", e.Exception.ToString());
                 application.InitializeComponent();
                 Globals.Instance.LoadSettings();
                 application.Run();
