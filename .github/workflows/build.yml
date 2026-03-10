@@ -40,34 +40,26 @@ jobs:
           Copy-Item "Source\HDRController\Release_x64\HDRController.dll" "Source\Externals\x64\HDRController.dll" -Force
           Copy-Item "Source\HDRController\Release_x86\HDRController.dll" "Source\Externals\x86\HDRController.dll" -Force
 
-      - name: Build & Package
+      - name: Build
         shell: pwsh
         run: |
-          # Patch Build.ps1: thay hardcoded VS path bằng msbuild từ PATH
-          # (setup-msbuild ở trên đã add vào PATH rồi)
           $msbuildPath = (Get-Command msbuild).Source
           $content = Get-Content Build.ps1 -Raw
           $content = $content -replace [regex]::Escape("'C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\msbuild.exe'"), "'$msbuildPath'"
-
-          # Fix typo $x86ip -> $x86zip
-          $content = $content -replace '\$x86ip', '$x86zip'
-
           Set-Content Build.ps1 $content
-          New-Item -ItemType Directory -Force -Path Releases
           . .\Build.ps1
+          buildVS ".\Source\AutoActions.sln" "ci-build" -zip $false
 
       - name: Upload x64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: AutoActions-x64
-          path: Releases/*x64*.zip
-          compression-level: 0
+          path: Source/Release_x64/
           if-no-files-found: error
 
       - name: Upload x86 artifact
         uses: actions/upload-artifact@v4
         with:
           name: AutoActions-x86
-          path: Releases/*x86*.zip
-          compression-level: 0
+          path: Source/Release_x86/
           if-no-files-found: error
