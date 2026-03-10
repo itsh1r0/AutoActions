@@ -23,6 +23,8 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore Source/AutoActions.sln
 
+      # Pre-build event copy HDRController.dll từ Externals\$(PlatformName)\
+      # nhưng repo không có subfolder x64/x86 — tạo thủ công
       - name: Prepare HDRController DLL for x64/x86
         shell: pwsh
         run: |
@@ -46,6 +48,10 @@ jobs:
           Set-Content Build.ps1 $content
           New-Item -ItemType Directory -Force -Path Releases
           . .\Build.ps1
+
+          # Pre-build event copy HDRController.dll hay fail trên CI → copy thủ công
+          Copy-Item "Source\AutoActions\HDRController.dll" "Source\Release_x64\HDRController.dll" -Force
+          Copy-Item "Source\AutoActions\HDRController.dll" "Source\Release_x86\HDRController.dll" -Force
 
       - name: Upload x64 artifact
         uses: actions/upload-artifact@v4
