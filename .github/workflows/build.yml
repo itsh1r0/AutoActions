@@ -28,6 +28,8 @@ jobs:
         run: |
           msbuild Source/HDRController/HDRController.sln /t:Build /m /p:Configuration=Release /p:Platform=x64
           msbuild Source/HDRController/HDRController.sln /t:Build /m /p:Configuration=Release /p:Platform=x86
+          Write-Host "=== Locating built DLLs ==="
+          Get-ChildItem -Path "Source\HDRController" -Recurse -Filter "HDRController.dll" | Select-Object FullName
 
       - name: Prepare HDRController DLL for x64/x86
         shell: pwsh
