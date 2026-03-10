@@ -9,7 +9,10 @@ function buildVS
         [String] $version,
 
         [parameter(Mandatory=$false)]
-        [bool] $nuget = $true
+        [bool] $nuget = $true,
+
+        [parameter(Mandatory=$false)]
+        [bool] $zip = $true
         
     )
     process
@@ -23,26 +26,27 @@ function buildVS
         & "$($msBuildExe)" "$($path)" /t:Build /m /property:Configuration=Release /property:Platform=x64
 		Write-Host "Building x86 $($path)" -foregroundcolor green
         & "$($msBuildExe)" "$($path)" /t:Build /m /property:Configuration=Release /property:Platform=x86
-		
-		$x64zip = ".\Releases\Release_AutoActions_$($version)_x64.zip"
-		$x86zip = ".\Releases\Release_AutoActions_$($version)_x86.zip"
 
+        if ($zip) {
+			$x64zip = ".\Releases\Release_AutoActions_$($version)_x64.zip"
+			$x86zip = ".\Releases\Release_AutoActions_$($version)_x86.zip"
 
+            Write-Host "Creating Zip x64 $($x64zip)" -foregroundcolor green
 
-        Write-Host "Creating Zip x64 $($x64zip)" -foregroundcolor green
+            if (Test-Path $x64zip -PathType leaf)
+            {del $x64zip}
 
-        if (Test-Path $x64zip -PathType leaf)
-        {del $x64zip}
+            Get-ChildItem -Path ".\Source\Release_x64" | 
+            Where-Object {$_.PsIsContainer -eq $true -or $_.Extension -eq ".exe" -or $_.Extension -eq ".config" -or $_.Extension -eq ".dll" -or $_.Name -eq "UpdateData.json"   } | Compress-Archive -DestinationPath $x64zip
 
-        Get-ChildItem -Path ".\Source\Release_x64" | 
-        Where-Object {$_.PsIsContainer -eq $true -or $_.Extension -eq ".exe" -or $_.Extension -eq ".config" -or $_.Extension -eq ".dll" -or $_.Name -eq "UpdateData.json"   } | Compress-Archive -DestinationPath $x64zip
+		    Write-Host "Creating Zip x86 $($x86zip)" -foregroundcolor green
+            if (Test-Path $x86zip -PathType leaf)
+            {del $x86zip}
 
-	    Write-Host "Creating Zip x86 $($x86zip)" -foregroundcolor green
-        if (Test-Path $x86zip -PathType leaf)
-        {del $x86zip}
+            Get-ChildItem -Path ".\Source\Release_x86" | 
+            Where-Object {$_.PsIsContainer -eq $true -or $_.Extension -eq ".exe" -or $_.Extension -eq ".config" -or $_.Extension -eq ".dll"  -or $_.Name -eq "UpdateData.json"  } | Compress-Archive -DestinationPath $x86zip
+        }
 
-        Get-ChildItem -Path ".\Source\Release_x86" | 
-        Where-Object {$_.PsIsContainer -eq $true -or $_.Extension -eq ".exe" -or $_.Extension -eq ".config" -or $_.Extension -eq ".dll"  -or $_.Name -eq "UpdateData.json"  } | Compress-Archive -DestinationPath $x86zip
         Write-Host "Finished!" -foregroundcolor green
 
     }
