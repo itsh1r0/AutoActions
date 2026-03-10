@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,14 +27,7 @@ namespace AutoActions.Info.Github
             InitializeClient();
             Globals.Logs.Add($"Requesting releases...", false);
             Release release;
-            try
-            {
-                release = _client.Repository.Release.GetLatest(323106537).Result;
-            }
-            catch (Exception ex)
-            {
-                release = _client.Repository.Release.GetLatest("Codectory", "AutoHDR").Result;
-            }
+            release = _client.Repository.Release.GetLatest("itsh1r0", "AutoActions").Result;
             Version latestGitHubVersion = new Version(release.TagName);
             DateTime latestReleaseDate = release.PublishedAt.HasValue ? release.PublishedAt.Value.DateTime : DateTime.MinValue;
             Globals.Logs.Add($"Releases found. Latest version: {latestGitHubVersion}", false);
@@ -69,7 +62,7 @@ namespace AutoActions.Info.Github
             Globals.Logs.Add($"Creating GitHubData...", false);
             var assetx64 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("_X64"));
             var assetx86 = release.Assets.FirstOrDefault(a => a.Name.ToUpperInvariant().Contains("_X86"));
-            return new GitHubData(changelog, latestGitHubVersion, latestReleaseDate, $@"https://github.com/Codectory/AutoActions/releases/tag/{latestGitHubVersion}", assetx64 != null ? assetx64.BrowserDownloadUrl : "", assetx86 != null ? assetx86.BrowserDownloadUrl : "");
+            return new GitHubData(changelog, latestGitHubVersion, latestReleaseDate, $@"https://github.com/itsh1r0/AutoActions/releases/tag/{latestGitHubVersion}", assetx64 != null ? assetx64.BrowserDownloadUrl : "", assetx86 != null ? assetx86.BrowserDownloadUrl : "");
         }
     }
 }
